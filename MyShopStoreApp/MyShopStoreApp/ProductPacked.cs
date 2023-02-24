@@ -8,9 +8,16 @@ namespace MyShopStoreApp
 {
     public class ProductPacked : Product
     {
-        public int Quantity { get; private set; }
-        public float MassOrCapacity { get; private set; }
+        public int Quantity { get;  set; }
+        public float MassOrCapacity { get;  private set; }
         public string Unit { get; private set; }
+        public float TotalPrice
+        {
+            get
+            {
+                return Quantity * this.UnitPrice;
+            }
+        }
         public ProductPacked(string name, float price, int quantity, float mass_cap, string unit) : base(name, price)
         {
             Quantity = quantity;

@@ -13,7 +13,7 @@ namespace MyShopStoreApp
         void LoadProductsFromFileToTmpList();
         void SaveProductsFromTmpListToFile();
         void AddProductToList(string productParams);
-        int FindProductInList(string productParams);
+        int[] FindProductInList(string productParams);
         bool UpdateProductInList(string productParams);
         bool DeleteProductFromList(string productParams);
 

@@ -41,7 +41,9 @@ do
                         collector.AddProductToList(line);//na wagę albo na paczki lub kartony
                         break;
                     case "-z":
-                        collector.FindProductInList(line);
+                        int[] ints = collector.FindProductInList(line);
+                        string found = collector.ReturnFound(ints);
+                        Console.WriteLine(found);
                         break;
                     case "-ac" or "-ai":
                         collector.UpdateProductInList(line);//cena jednostkowa labo ilość (sztuk lub wagowa)

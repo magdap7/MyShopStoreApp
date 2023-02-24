@@ -66,7 +66,7 @@ namespace MyShopStoreApp
             }
             return list;
         }
-        void ClearFile()
+        public void ClearFile()
         {
             if (File.Exists(fileName))
             {

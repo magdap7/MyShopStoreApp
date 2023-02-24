@@ -8,7 +8,15 @@ namespace MyShopStoreApp
 {
     public class ProductWeighted : Product
     {
-        public float Weight { get; private set; }
+        public float Weight { get; set; }
+        public float TotalPrice 
+        { 
+            get 
+            { 
+                return Weight*this.UnitPrice;
+            } 
+        }
+
         public ProductWeighted(string name, float price, float weight) : base(name, price)
         {
             this.Weight = weight;

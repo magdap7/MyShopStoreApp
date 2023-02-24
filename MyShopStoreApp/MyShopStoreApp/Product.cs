@@ -9,7 +9,7 @@ namespace MyShopStoreApp
     public abstract class Product 
     {
         public  string Name { get; private set; }
-        public  float UnitPrice { get; private set; }
+        public  float UnitPrice { get;  set; }
 
 
         public Product(string name, float price)
