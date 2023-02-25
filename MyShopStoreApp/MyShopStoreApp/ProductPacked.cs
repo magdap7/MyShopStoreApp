@@ -24,5 +24,16 @@ namespace MyShopStoreApp
             MassOrCapacity = mass_cap;
             Unit = unit;
         }
+        public override string ToString()
+        {
+            string objDescription = "";
+            objDescription = objDescription + base.WriteMe();
+            objDescription = objDescription + $"Ilość sztuk: \t {this.Quantity}\n";
+            objDescription = objDescription + $"Masa lub pojemność: \t {this.MassOrCapacity}\n";
+            objDescription = objDescription + $"Jednostka: \t {this.Unit}\n";
+            objDescription = objDescription + $"Cena całkowita: \t {this.TotalPrice}\n";
+
+            return objDescription;
+        }
     }
 }

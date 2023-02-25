@@ -18,8 +18,11 @@ namespace MyShopStoreApp
         FileManager fileManagerW, fileManagerP;
         public Collector(string filenameW, string filenameP)
         {
-            fileManagerW = new FileManager(filenameW);
-            fileManagerP = new FileManager(filenameP);
+            string filepath= "C:\\Users\\magda\\MyProjects\\MyShopStoreApp\\MyShopStoreApp\\MyShopStoreApp\\bin\\";
+            string headerW = "Nazwa;Cena jedn.;Waga";
+            string headerP = "Nazwa;Cena jedn.;Ile sztuk;Masa lub obj.;Jednostka [kg, l]";
+            fileManagerW = new FileManager(filepath + filenameW, headerW);
+            fileManagerP = new FileManager(filepath + filenameP, headerP);
         }
 
         public void LoadProductsFromFileToTmpList()
@@ -28,13 +31,17 @@ namespace MyShopStoreApp
             List<string> linesW = fileManagerW.ReadLineListFromFile();
             List<string> linesP = fileManagerP.ReadLineListFromFile();
 
-            if(linesW!= null) 
+            if (linesW != null)
             {
                 foreach (string line in linesW)
                 {
                     string[] parts = line.Split(new char[] { ';' });
                     productWeighteds.Add(new ProductWeighted(parts[0], float.Parse(parts[1]), float.Parse(parts[2])));
                 }
+            }
+            else
+            {
+                throw new Exception("Empty file");
             }
             if (linesP!= null)
             {
@@ -43,13 +50,22 @@ namespace MyShopStoreApp
                     string[] parts = line.Split(new char[] { ';' });
                     productPackeds.Add(new ProductPacked(parts[0], float.Parse(parts[1]), int.Parse(parts[2]), float.Parse(parts[3]), parts[4]));
                 }
-            }  
+            }
+            else
+            {
+                throw new Exception("Empty file");
+            }
         }
         public void SaveProductsFromTmpListToFile()
         {
             //throw new NotImplementedException();
-            fileManagerW.ClearFile();
-            fileManagerP.ClearFile();
+            //fileManagerW.ClearFile();
+            //fileManagerP.ClearFile();
+
+            if(productWeighteds.Count> 0)
+                fileManagerW.ClearFile();
+            if (productPackeds.Count > 0)
+                fileManagerP.ClearFile();
             foreach (ProductWeighted item in productWeighteds)
             {
                 string line = $"{item.Name};{item.UnitPrice};{item.Weight}";
@@ -57,8 +73,8 @@ namespace MyShopStoreApp
             }
             foreach (ProductPacked item in productPackeds)
             {
-                string line = $"{item.Name};{item.UnitPrice};{item.Quantity};{item.MassOrCapacity},{item.Unit}";
-                fileManagerW.AddLineToFile(line);
+                string line = $"{item.Name};{item.UnitPrice};{item.Quantity};{item.MassOrCapacity};{item.Unit}";
+                fileManagerP.AddLineToFile(line);
             }
         }
 
@@ -84,13 +100,13 @@ namespace MyShopStoreApp
             string result = inputValidator.IsValidForDeletingProduct(productParams);
             if (result != null)
             {
-                int[] foundIndex = FindProductInList(result);
-                if (foundIndex[0] == 1)
+                int[] foundIndex = FindProductInList(result, "strict");
+                if (foundIndex[0] == 1 && foundIndex[1] >= 0)
                 {//na wagę
                     productWeighteds.RemoveAt(foundIndex[1]);
                     return true;
                 }
-                if (foundIndex[0] == 2)
+                if (foundIndex[0] == 2 && foundIndex[1] >= 0)
                 {//na sztuki
                     productPackeds.RemoveAt(foundIndex[1]);
                     return true;
@@ -98,7 +114,7 @@ namespace MyShopStoreApp
             }
             return false;
         }
-        public int[] FindProductInList(string productParams)
+        public int[] FindProductInList(string productParams, string type)
         {
             //throw new NotImplementedException();
             string result = inputValidator.IsValidForFindingProduct(productParams);
@@ -106,13 +122,21 @@ namespace MyShopStoreApp
             {
                 for (int index = 0; index < productWeighteds.Count; index++)
                 {//szukamy pierwszego
-                    if (productWeighteds[index].Name == result)
-                        return new int[2] { 1, index };
+                    if(type=="strict")
+                        if (productWeighteds[index].Name == result)
+                            return new int[2] { 1, index };
+                    if (type == "nonstrict")
+                        if (productWeighteds[index].Name.Contains(result))
+                            return new int[2] { 1, index };
                 }
                 for (int index = 0; index < productPackeds.Count; index++)
                 {
-                    if (productPackeds[index].Name == result)
-                        return new int[2] { 2, index };
+                    if (type == "strict")
+                        if (productPackeds[index].Name == result)
+                            return new int[2] { 2, index };
+                    if (type == "nonstrict")
+                        if (productPackeds[index].Name.Contains(result))
+                            return new int[2] { 2, index };
                 }
             }
             return new int[2] { -1, -1 };
@@ -123,8 +147,8 @@ namespace MyShopStoreApp
             string[] result = inputValidator.IsValidForUpdatingProduct(productParams);
             if (result != null)
             {
-                int[] foundIndex = FindProductInList(result[1]);
-                if (foundIndex[0] == 1)
+                int[] foundIndex = FindProductInList(result[1],"strict");
+                if (foundIndex[0] == 1 && foundIndex[1] >= 0)
                 {//na wagę
                     if (result[0] == "-ac")
                         productWeighteds[foundIndex[1]].UnitPrice = float.Parse(result[2]);
@@ -132,7 +156,7 @@ namespace MyShopStoreApp
                         productWeighteds[foundIndex[1]].Weight = float.Parse(result[2]);
                     return true;
                 }
-                if (foundIndex[0] == 2)
+                if (foundIndex[0] == 2 && foundIndex[1] >= 0)
                 {//na sztuki
                     if (result[0] == "-ac")
                         productPackeds[foundIndex[1]].UnitPrice = float.Parse(result[2]);
@@ -143,23 +167,27 @@ namespace MyShopStoreApp
             }
             return false;
         }
-        public string ReturnFound(int[] ints)
+        public string ReturnFound(int[] foundIndex)
         {
             ProductWeighted itemW = null;
             ProductPacked itemP = null;
 
-            if (ints[0] == 1)
+            if (foundIndex[0] == 1 && foundIndex[1] >= 0)
             {
-                itemW = productWeighteds[ints[1]];
-                return $"{itemW.Name}\t{itemW.UnitPrice}\t{itemW.Weight}\t";
-            }    
+                itemW = productWeighteds[foundIndex[1]];
+                //return $"{itemW.Name}\t{itemW.UnitPrice}\t{itemW.Weight}\t";
+                return itemW.ToString();
+            }
+            else if (foundIndex[0] == 2 && foundIndex[1] >= 0)
+            {
+                itemP = productPackeds[foundIndex[1]];
+                //return $"{itemP.Name}\t{itemP.UnitPrice}\t{itemP.Quantity}\t{itemP.MassOrCapacity}\t{itemP.Unit}\t";
+                return itemP.ToString();
+            }
             else
             {
-                itemP = productPackeds[ints[1]];
-                return $"{itemP.Name}\t{itemP.UnitPrice}\t{itemP.Quantity}\t{itemP.MassOrCapacity}\t{itemP.Unit}\t";
+                return "";
             }
-                
-
         }
     }
 }

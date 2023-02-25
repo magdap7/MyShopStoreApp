@@ -1,11 +1,24 @@
 ﻿// See https://aka.ms/new-console-template for more information
 //Console.WriteLine("Hello, World!");
 
+/*
+                                O PROGRAMIE
+ 
+Program obsługuje magazyn do sklepu, gdzie produktami są  artykuły na wagę lub na sztuki. Wszystkie produkty posiadają nazwę, która jednoznacznie 
+okresla cechy produktu, czyli np masę opakowania czy pojemność kartonu. Poza tym mają cenę jednostkową (na sztukę lub na wagę).
+Co rozróżnia dwa typy produktów: te ważone mają dodatkowo atrybut w postaci wagi (kg), natomiast te na sztuki mają określoną: masę w kilogramach 
+na sztukę lub pojemność w litrach. Te, które nie mają miary wagi (np jajka, papierosy) ani objętości mają jednostkę x.
+Program umożliwia dodawanie do pliku nowych produktów, wyszukiwania po nazwie lub jej fragmencie. 
+Można aktualizować cenę jednostkową (na szt lub kg) wybranego po pełnej nazwie produktu. Można też usuwać wybrane pozycje z listy.
+ 
+*/
+
+
 using MyShopStoreApp;
 
 
 PrintInstructions();
-var collector = new Collector("ProductsWeighted.csv", "ProductsPackedd");
+var collector = new Collector("ProductsWeighted.csv", "ProductsPacked.csv");
 try
 {
     collector.LoadProductsFromFileToTmpList();
@@ -15,9 +28,10 @@ catch (Exception ex)
     Console.WriteLine($"Exeption catched: {ex.Message}");
 }
 
-string line;
+string line="";
 do
 {
+    Console.Write(">");
     line = Console.ReadLine();
     if (line == "q" || line.Length==0)
         break;
@@ -41,8 +55,8 @@ do
                         collector.AddProductToList(line);//na wagę albo na paczki lub kartony
                         break;
                     case "-z":
-                        int[] ints = collector.FindProductInList(line);
-                        string found = collector.ReturnFound(ints);
+                        int[] foundIndex = collector.FindProductInList(line, "nonstrict");
+                        string found = collector.ReturnFound(foundIndex);
                         Console.WriteLine(found);
                         break;
                     case "-ac" or "-ai":
@@ -57,7 +71,7 @@ do
             }
             else
             {
-                throw new Exception("First param too short or contains characters not allowed.");
+                throw new Exception("Name of product too short (less then 5 characters) or contains characters not allowed.");
             } 
         }
         else 
@@ -65,7 +79,7 @@ do
             throw new Exception("Ivalid input start");
         }
 
-        Console.WriteLine(line);
+        //Console.WriteLine(line);
     }
     catch (Exception ex)
     {

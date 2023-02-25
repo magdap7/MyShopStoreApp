@@ -9,23 +9,26 @@ namespace MyShopStoreApp
 {
     public class FileManager
     {
-        const string header = "Nazwa;Cena jedn.;Ile sztuk;Masa lub obj.;Jednostka [kg, l]";
-        string fileName;
-        public FileManager(string name)
+        string FileName;
+        string Header;
+
+        public FileManager(string filename, string header)
         {
-            this.fileName = name;
+            this.FileName = filename;
+            this.Header = header;
         }
+   
 
         public void AddLineToFile(List<string> list)
         {
-            if (!File.Exists(fileName))
+            if (!File.Exists(FileName))
             {//dodaj wiersz nazw kolumn
-                using (var writer = File.AppendText(fileName))
+                using (var writer = File.AppendText(FileName))
                 {
-                    writer.WriteLine(header);
+                    writer.WriteLine(Header);
                 }
             }
-            using (var writer = File.AppendText(fileName))
+            using (var writer = File.AppendText(FileName))
             {
                 string combinedString = string.Join(";", list.ToArray());
                 writer.WriteLine(combinedString);
@@ -33,14 +36,14 @@ namespace MyShopStoreApp
         }
         public void AddLineToFile(string combinedString)
         {
-            if (!File.Exists(fileName))
+            if (!File.Exists(FileName))
             {//dodaj wiersz nazw kolumn
-                using (var writer = File.AppendText(fileName))
+                using (var writer = File.AppendText(FileName))
                 {
-                    writer.WriteLine(header);
+                    writer.WriteLine(Header);
                 }
             }
-            using (var writer = File.AppendText(fileName))
+            using (var writer = File.AppendText(FileName))
             {
                 writer.WriteLine(combinedString);
             }
@@ -48,14 +51,15 @@ namespace MyShopStoreApp
         public List<string> ReadLineListFromFile()
         {
             List<string> list = new List<string>();
-            if (!File.Exists(fileName))
+            if (!File.Exists(FileName))
             {//rzuć wyjątkiem
-                throw new Exception($"File {fileName} doesn't exist.");
+                throw new Exception($"File {FileName} doesn't exist.");
             }
             else
             {
-                using (var reader = File.OpenText(fileName))
+                using (var reader = File.OpenText(FileName))
                 {
+                    reader.ReadLine();//wiersz kolumn
                     var line = reader.ReadLine();
                     while (line != null)
                     {
@@ -68,13 +72,14 @@ namespace MyShopStoreApp
         }
         public void ClearFile()
         {
-            if (File.Exists(fileName))
+            if (File.Exists(FileName))
             {
-                File.Delete(fileName);
+                //File.Delete(FileName);
+                using (StreamWriter writer = new StreamWriter(FileName))
+                {
+                    writer.WriteLine(Header);
+                }
             }
         }
-
-
-
     }
 }

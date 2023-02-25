@@ -18,5 +18,12 @@ namespace MyShopStoreApp
             this.UnitPrice = price;
         }
 
+        public virtual string WriteMe()
+        {
+            string objDescription = "";
+            objDescription = objDescription + $"Nazwa: \t {this.Name}\n";
+            objDescription = objDescription + $"Cena jednostkowa: \t {this.UnitPrice}\n";
+            return objDescription;
+        }
     }
 }
