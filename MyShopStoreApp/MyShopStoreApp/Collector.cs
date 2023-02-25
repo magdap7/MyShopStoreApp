@@ -15,6 +15,11 @@ namespace MyShopStoreApp
         List<ProductPacked> productPackeds = new List<ProductPacked>();
         InputValidator inputValidator = new InputValidator();
 
+        public delegate void ProductAddedDelegate(object sender, EventArgs args);
+        public delegate void ProductDeletedDelegate(object sender, EventArgs args);
+        public event ProductAddedDelegate ProductAdded;
+        public event ProductDeletedDelegate ProductDeleted;
+
         FileManager fileManagerW, fileManagerP;
         public Collector(string filenameW, string filenameP)
         {
@@ -87,10 +92,12 @@ namespace MyShopStoreApp
                 if (result.Length == 4)//produkty na wagę
                 {
                     productWeighteds.Add(new ProductWeighted(result[1], float.Parse(result[2]), float.Parse(result[3])));
+                    this.ProductAdded(this, new EventArgs());
                 }
                 if (result.Length == 6)//produkty na sztuki
                 {
                     productPackeds.Add(new ProductPacked(result[1], float.Parse(result[2]), int.Parse(result[3]), float.Parse(result[4]), result[5]));
+                    this.ProductAdded(this, new EventArgs());
                 }
             }
         }
@@ -104,11 +111,13 @@ namespace MyShopStoreApp
                 if (foundIndex[0] == 1 && foundIndex[1] >= 0)
                 {//na wagę
                     productWeighteds.RemoveAt(foundIndex[1]);
+                    this.ProductDeleted(this, new EventArgs());
                     return true;
                 }
                 if (foundIndex[0] == 2 && foundIndex[1] >= 0)
                 {//na sztuki
                     productPackeds.RemoveAt(foundIndex[1]);
+                    this.ProductDeleted(this, new EventArgs());
                     return true;
                 } 
             }
@@ -120,26 +129,37 @@ namespace MyShopStoreApp
             string result = inputValidator.IsValidForFindingProduct(productParams);
             if (result != null)
             {
-                for (int index = 0; index < productWeighteds.Count; index++)
-                {//szukamy pierwszego
-                    if(type=="strict")
+                if (type == "strict")
+                {
+                    for (int index = 0; index < productWeighteds.Count; index++)
+                    {//szukamy pierwszego pasujacego
                         if (productWeighteds[index].Name == result)
                             return new int[2] { 1, index };
-                    if (type == "nonstrict")
-                        if (productWeighteds[index].Name.Contains(result))
-                            return new int[2] { 1, index };
-                }
-                for (int index = 0; index < productPackeds.Count; index++)
-                {
-                    if (type == "strict")
+                    }
+                    for (int index = 0; index < productPackeds.Count; index++)
+                    {
                         if (productPackeds[index].Name == result)
                             return new int[2] { 2, index };
-                    if (type == "nonstrict")
+                    }
+                    return new int[2] { -1, -1 };
+                }
+                else //nonstrict
+                {
+                    for (int index = 0; index < productWeighteds.Count; index++)
+                    {//szukamy pierwszego pasujacego
+                        if (productWeighteds[index].Name.Contains(result))
+                            return new int[2] { 1, index };
+                    }
+                    for (int index = 0; index < productPackeds.Count; index++)
+                    {
                         if (productPackeds[index].Name.Contains(result))
                             return new int[2] { 2, index };
+                    }
+                    return new int[2] { -1, -1 };
                 }
             }
-            return new int[2] { -1, -1 };
+            else
+                return new int[2] { -1, -1 };
         }
         public bool UpdateProductInList(string productParams)
         {

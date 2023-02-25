@@ -19,6 +19,8 @@ using MyShopStoreApp;
 
 PrintInstructions();
 var collector = new Collector("ProductsWeighted.csv", "ProductsPacked.csv");
+collector.ProductAdded += PrintEventProductAdded;
+collector.ProductDeleted += PrintEventProductDeleted;
 try
 {
     collector.LoadProductsFromFileToTmpList();
@@ -116,6 +118,7 @@ void PrintInstructions()
     Console.WriteLine("Ceny podawaj w postaci liczb całkowitych lub zmiennoprzecinkowych, np.: 29,99");
     Console.WriteLine("Masę lub objętość podawaj w postaci liczb całkowitych lub zmiennoprzecinkowych, np.: 3, czy 1,5, czy 0,25");
     Console.WriteLine("Nazwę produktu podawaj bez spacji, przecinków i bez polskich znaków.");
+    Console.WriteLine("Nazwa produktu musi posiadac conajmniej 5 znaków.");
     Console.WriteLine("Jeśli produkt jest na wagę, nie muszisz pdawać jednostki, jest ona traktowana jak kg.");
     Console.WriteLine("Jeśli produkt jest na sztuki, jako jednostkę podawaj jedną z: kg, l.");
     Console.WriteLine("Jeśli produkt jest na sztuki, ale nie ma podanej wagi czy pojemności, wstaw x.");
@@ -123,4 +126,13 @@ void PrintInstructions()
 
     //Console.WriteLine("syntax1: -n [unikatowa nazwa produktu] -c [cena jednostkowa w zł] -i [ilość sztuk] -m [ilość masowa] -p [jednostka kg lub l]");
     //Console.WriteLine("syntax2: [unikatowa nazwa produktu];[cena jednostkowa w zł];[ilość sztuk];[masa lub objętość];[jednostka w kg lub l]");
+}
+
+void PrintEventProductAdded(object sender, EventArgs args)
+{
+    Console.WriteLine("Dodano produkt do listy.");
+}
+void PrintEventProductDeleted(object sender, EventArgs args)
+{
+    Console.WriteLine("Usunięto produkt z listy.");
 }
