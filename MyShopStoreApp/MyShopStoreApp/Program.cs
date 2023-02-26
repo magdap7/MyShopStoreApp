@@ -21,6 +21,7 @@ PrintInstructions();
 var collector = new Collector("ProductsWeighted.csv", "ProductsPacked.csv");
 collector.ProductAdded += PrintEventProductAdded;
 collector.ProductDeleted += PrintEventProductDeleted;
+collector.ProductUpdated += PrintEventProductUpdated;
 try
 {
     collector.LoadProductsFromFileToTmpList();
@@ -62,10 +63,10 @@ do
                         Console.WriteLine(found);
                         break;
                     case "-ac" or "-ai":
-                        collector.UpdateProductInList(line);//cena jednostkowa labo ilość (sztuk lub wagowa)
+                        collector.UpdateProductInList(line);//cena jednostkowa albo ilość (sztuk lub wagowa)
                         break;
                     case "-u":
-                        collector.DeleteProductFromList(line);
+                        bool res = collector.DeleteProductFromList(line);
                         break;
                     default:
                         break;
@@ -130,9 +131,13 @@ void PrintInstructions()
 
 void PrintEventProductAdded(object sender, EventArgs args)
 {
-    Console.WriteLine("Dodano produkt do listy.");
+    Console.WriteLine($"Dodano nowy produkt do listy. //{args}");
 }
 void PrintEventProductDeleted(object sender, EventArgs args)
 {
-    Console.WriteLine("Usunięto produkt z listy.");
+    Console.WriteLine($"Usunięto wybrany produkt z listy. //{args}");
+}
+void PrintEventProductUpdated(object sender, EventArgs args)
+{
+    Console.WriteLine($"Zaktualizowano wybrany produkt z listy. //{args}");
 }

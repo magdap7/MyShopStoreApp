@@ -59,12 +59,7 @@ namespace MyShopStoreApp
             }
         }
         public string IsValidForFindingProduct(string input)
-        {//-z nazwa
-            var array = input.Split(" ");
-            return array[1];
-        }
-        public string IsValidForDeletingProduct(string input)
-        {//-u nazwa
+        {//-z nazwa, -u nazwa
             var array = input.Split(" ");
             return array[1];
         }

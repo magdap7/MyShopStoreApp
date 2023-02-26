@@ -17,8 +17,10 @@ namespace MyShopStoreApp
 
         public delegate void ProductAddedDelegate(object sender, EventArgs args);
         public delegate void ProductDeletedDelegate(object sender, EventArgs args);
+        public delegate void ProductUpdatedDelegate(object sender, EventArgs args);
         public event ProductAddedDelegate ProductAdded;
         public event ProductDeletedDelegate ProductDeleted;
+        public event ProductUpdatedDelegate ProductUpdated;
 
         FileManager fileManagerW, fileManagerP;
         public Collector(string filenameW, string filenameP)
@@ -104,23 +106,19 @@ namespace MyShopStoreApp
         public bool DeleteProductFromList(string productParams)
         {
             //throw new NotImplementedException();
-            string result = inputValidator.IsValidForDeletingProduct(productParams);
-            if (result != null)
-            {
-                int[] foundIndex = FindProductInList(result, "strict");
-                if (foundIndex[0] == 1 && foundIndex[1] >= 0)
-                {//na wagę
-                    productWeighteds.RemoveAt(foundIndex[1]);
-                    this.ProductDeleted(this, new EventArgs());
-                    return true;
-                }
-                if (foundIndex[0] == 2 && foundIndex[1] >= 0)
-                {//na sztuki
-                    productPackeds.RemoveAt(foundIndex[1]);
-                    this.ProductDeleted(this, new EventArgs());
-                    return true;
-                } 
+            int[] foundIndex = FindProductInList(productParams, "strict");
+            if (foundIndex[0] == 1 && foundIndex[1] >= 0)
+            {//na wagę
+                productWeighteds.RemoveAt(foundIndex[1]);
+                this.ProductDeleted(this, new EventArgs());
+                return true;
             }
+            if (foundIndex[0] == 2 && foundIndex[1] >= 0)
+            {//na sztuki
+                productPackeds.RemoveAt(foundIndex[1]);
+                this.ProductDeleted(this, new EventArgs());
+                return true;
+            } 
             return false;
         }
         public int[] FindProductInList(string productParams, string type)
@@ -165,15 +163,17 @@ namespace MyShopStoreApp
         {
             //throw new NotImplementedException();
             string[] result = inputValidator.IsValidForUpdatingProduct(productParams);
+            
             if (result != null)
             {
-                int[] foundIndex = FindProductInList(result[1],"strict");
+                int[] foundIndex = FindProductInList(productParams, "strict");
                 if (foundIndex[0] == 1 && foundIndex[1] >= 0)
                 {//na wagę
                     if (result[0] == "-ac")
                         productWeighteds[foundIndex[1]].UnitPrice = float.Parse(result[2]);
                     if (result[0] == "-ai")
                         productWeighteds[foundIndex[1]].Weight = float.Parse(result[2]);
+                    this.ProductUpdated(this, new EventArgs());
                     return true;
                 }
                 if (foundIndex[0] == 2 && foundIndex[1] >= 0)
@@ -182,6 +182,7 @@ namespace MyShopStoreApp
                         productPackeds[foundIndex[1]].UnitPrice = float.Parse(result[2]);
                     if (result[0] == "-ai")
                         productPackeds[foundIndex[1]].Quantity = int.Parse(result[2]);
+                    this.ProductUpdated(this, new EventArgs());
                     return true;
                 }
             }
