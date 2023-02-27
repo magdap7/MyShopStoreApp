@@ -124,65 +124,76 @@ namespace MyShopStoreApp
         public int[] FindProductInList(string productParams, string type)
         {
             //throw new NotImplementedException();
-            string result = inputValidator.IsValidForFindingProduct(productParams);
-            if (result != null)
+            var array = productParams.Split(' ');
+            string name = array[1]; //nazwa
+
+            if (type == "strict")
             {
-                if (type == "strict")
-                {
-                    for (int index = 0; index < productWeighteds.Count; index++)
-                    {//szukamy pierwszego pasujacego
-                        if (productWeighteds[index].Name == result)
-                            return new int[2] { 1, index };
-                    }
-                    for (int index = 0; index < productPackeds.Count; index++)
-                    {
-                        if (productPackeds[index].Name == result)
-                            return new int[2] { 2, index };
-                    }
-                    return new int[2] { -1, -1 };
+                for (int index = 0; index < productWeighteds.Count; index++)
+                {//szukamy pierwszego pasujacego
+                    if (productWeighteds[index].Name == name)
+                        return new int[2] { 1, index };
                 }
-                else //nonstrict
+                for (int index = 0; index < productPackeds.Count; index++)
                 {
-                    for (int index = 0; index < productWeighteds.Count; index++)
-                    {//szukamy pierwszego pasujacego
-                        if (productWeighteds[index].Name.Contains(result))
-                            return new int[2] { 1, index };
-                    }
-                    for (int index = 0; index < productPackeds.Count; index++)
-                    {
-                        if (productPackeds[index].Name.Contains(result))
-                            return new int[2] { 2, index };
-                    }
-                    return new int[2] { -1, -1 };
+                    if (productPackeds[index].Name == name)
+                        return new int[2] { 2, index };
                 }
-            }
-            else
                 return new int[2] { -1, -1 };
+            }
+            else //nonstrict
+            {
+                for (int index = 0; index < productWeighteds.Count; index++)
+                {//szukamy pierwszego pasujacego
+                    if (productWeighteds[index].Name.Contains(name))
+                        return new int[2] { 1, index };
+                }
+                for (int index = 0; index < productPackeds.Count; index++)
+                {
+                    if (productPackeds[index].Name.Contains(name))
+                        return new int[2] { 2, index };
+                }
+                return new int[2] { -1, -1 };
+            }
         }
         public bool UpdateProductInList(string productParams)
         {
             //throw new NotImplementedException();
             string[] result = inputValidator.IsValidForUpdatingProduct(productParams);
-            
+
             if (result != null)
             {
                 int[] foundIndex = FindProductInList(productParams, "strict");
                 if (foundIndex[0] == 1 && foundIndex[1] >= 0)
                 {//na wagę
                     if (result[0] == "-ac")
+                    {
                         productWeighteds[foundIndex[1]].UnitPrice = float.Parse(result[2]);
-                    if (result[0] == "-ai")
+                        this.ProductUpdated(this, new EventArgs());
+                    }   
+                    else //if (result[0] == "-aiw")
+                    {
                         productWeighteds[foundIndex[1]].Weight = float.Parse(result[2]);
-                    this.ProductUpdated(this, new EventArgs());
+                        this.ProductUpdated(this, new EventArgs());
+                    }
                     return true;
                 }
                 if (foundIndex[0] == 2 && foundIndex[1] >= 0)
                 {//na sztuki
                     if (result[0] == "-ac")
+                    {
                         productPackeds[foundIndex[1]].UnitPrice = float.Parse(result[2]);
-                    if (result[0] == "-ai")
+                        this.ProductUpdated(this, new EventArgs());
+                    }    
+                    if (result[0] == "-aip")
+                    {
                         productPackeds[foundIndex[1]].Quantity = int.Parse(result[2]);
-                    this.ProductUpdated(this, new EventArgs());
+                        this.ProductUpdated(this, new EventArgs());
+                    }
+                    else
+                    {
+                        throw new Exception("You can't change weight in packed products.");
+                    }
                     return true;
                 }
             }

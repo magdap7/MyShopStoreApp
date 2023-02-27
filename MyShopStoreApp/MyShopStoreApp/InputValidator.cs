@@ -43,25 +43,23 @@ namespace MyShopStoreApp
             }
         }
         public string[] IsValidForUpdatingProduct(string input)
-        {//-ac nazwa cena, albo: -ai nazwa ilosc
+        {//-ac nazwa cena, albo: -aiw nazwa ilosc, albo: -aip nazwa ilosc
             string[] array = input.Split(" ");
-            bool cnd1;
+            
             if (array.Length == 3)
             {
-                if (float.TryParse(array[2], out float value1))
+                bool cnd1 = (array[0] == "-ac") && float.TryParse(array[2], out float value1);//cena float zawsze
+                bool cnd2 = (array[0] == "-aiw") && float.TryParse(array[2], out float value2);
+                bool cnd3 = (array[0] == "-aip") && int.TryParse(array[2], out int value3);
+                if (cnd1  || cnd2 || cnd3)
                     return array;
                 else
-                    throw new Exception("Invalid input for updating produkt");
+                    throw new Exception("Error while parsing.");
             }
             else
             {
                 throw new Exception("Invalid input for updating produkt");
             }
-        }
-        public string IsValidForFindingProduct(string input)
-        {//-z nazwa, -u nazwa
-            var array = input.Split(" ");
-            return array[1];
         }
     }
 }

@@ -44,10 +44,11 @@ do
         bool cond2 = line.StartsWith("-dp ");
         bool cond3 = line.StartsWith("-z ");
         bool cond4 = line.StartsWith("-ac ");
-        bool cond5 = line.StartsWith("-ai ");
-        bool cond6 = line.StartsWith("-u ");
+        bool cond5 = line.StartsWith("-aiw ");//wagowo
+        bool cond6 = line.StartsWith("-aip ");//paczki, pojemniki, kartony
+        bool cond7 = line.StartsWith("-u ");
 
-        if (cond1 || cond2 || cond3 || cond4 || cond5 || cond6)
+        if (cond1 || cond2 || cond3 || cond4 || cond5 || cond6 || cond7)
         {
             var array = line.Split(' '); 
             if (array[1].Length>4 && !array[1].Contains(","))
@@ -62,14 +63,15 @@ do
                         string found = collector.ReturnFound(foundIndex);
                         Console.WriteLine(found);
                         break;
-                    case "-ac" or "-ai":
+                    case "-ac" or "-aiw" or "-aip":
                         collector.UpdateProductInList(line);//cena jednostkowa albo ilość (sztuk lub wagowa)
                         break;
                     case "-u":
                         bool res = collector.DeleteProductFromList(line);
                         break;
                     default:
-                        break;
+                        PrintInstructions();
+                        throw new Exception("Inwalid command line."); 
                 }
             }
             else
@@ -112,7 +114,8 @@ void PrintInstructions()
     Console.WriteLine("-dp nazwa cena ilosc_sztuk waga/pojemnosc/brak jednostka (kg lub l lub x)    - dodanie produktu na sztuki");
     Console.WriteLine("-z fragnent_tekstu   - znalezienie produktu po słowie");
     Console.WriteLine("-ac nazwa cena   - modyfikacja ceny jednostkowej danego produktu");
-    Console.WriteLine("-ai nazwa ilosc  - modyfikacja wagi lub ilości sztuk danego produktu");
+    Console.WriteLine("-aiw nazwa waga  - modyfikacja wagi danego produktu");
+    Console.WriteLine("-aip nazwa ilosc  - modyfikacja ilości sztuk danego produktu");
     Console.WriteLine("-u nazwa    - usunięcie z bazy danego produktu");
 
     Console.WriteLine("Uwagi pomocznicze:");
