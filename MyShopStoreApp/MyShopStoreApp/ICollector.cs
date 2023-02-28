@@ -9,7 +9,8 @@ namespace MyShopStoreApp
 {
     public interface ICollector
     {
-        
+        int TotalCount { get; }
+        float TotalCost { get; }
         void LoadProductsFromFileToTmpList();
         void SaveProductsFromTmpListToFile();
         void AddProductToList(string productParams);

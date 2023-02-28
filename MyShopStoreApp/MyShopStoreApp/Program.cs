@@ -6,10 +6,10 @@
  
 Program obsługuje magazyn do sklepu, gdzie produktami są  artykuły na wagę lub na sztuki. Wszystkie produkty posiadają nazwę, która jednoznacznie 
 okresla cechy produktu, czyli np masę opakowania czy pojemność kartonu. Poza tym mają cenę jednostkową (na sztukę lub na wagę).
-Co rozróżnia dwa typy produktów: te ważone mają dodatkowo atrybut w postaci wagi (kg), natomiast te na sztuki mają określoną: masę w kilogramach 
-na sztukę lub pojemność w litrach. Te, które nie mają miary wagi (np jajka, papierosy) ani objętości mają jednostkę x.
+Co rozróżnia dwa typy produktów: te ważone mają dodatkowo atrybut w postaci wagi (kg), natomiast te na sztuki mają określoną: ilość sztuk
+i masę w kilogramach  na sztukę lub pojemność w litrach. Te, które nie mają miary wagi (np jajka, papierosy) ani objętości mają jednostkę x.
 Program umożliwia dodawanie do pliku nowych produktów, wyszukiwania po nazwie lub jej fragmencie. 
-Można aktualizować cenę jednostkową (na szt lub kg) wybranego po pełnej nazwie produktu. Można też usuwać wybrane pozycje z listy.
+Można aktualizować cenę jednostkową (na szt lub kg) wybranego po pełnej nazwie produktu. Można też usuwać wybrane pozycje z listy i z pliku.
  
 */
 
@@ -19,9 +19,7 @@ using MyShopStoreApp;
 
 PrintInstructions();
 var collector = new Collector("ProductsWeighted.csv", "ProductsPacked.csv");
-collector.ProductAdded += PrintEventProductAdded;
-collector.ProductDeleted += PrintEventProductDeleted;
-collector.ProductUpdated += PrintEventProductUpdated;
+
 try
 {
     collector.LoadProductsFromFileToTmpList();
@@ -36,7 +34,7 @@ do
 {
     Console.Write(">");
     line = Console.ReadLine();
-    if (line == "q" || line.Length==0)
+    if (line == "q" || line==null)
         break;
     try
     {
@@ -70,8 +68,8 @@ do
                         bool res = collector.DeleteProductFromList(line);
                         break;
                     default:
-                        PrintInstructions();
-                        throw new Exception("Inwalid command line."); 
+                        break;
+                        //throw new Exception("Inwalid command line."); 
                 }
             }
             else
@@ -81,10 +79,9 @@ do
         }
         else 
         {
+            PrintInstructions();
             throw new Exception("Ivalid input start");
         }
-
-        //Console.WriteLine(line);
     }
     catch (Exception ex)
     {
@@ -132,15 +129,4 @@ void PrintInstructions()
     //Console.WriteLine("syntax2: [unikatowa nazwa produktu];[cena jednostkowa w zł];[ilość sztuk];[masa lub objętość];[jednostka w kg lub l]");
 }
 
-void PrintEventProductAdded(object sender, EventArgs args)
-{
-    Console.WriteLine($"Dodano nowy produkt do listy. //{args}");
-}
-void PrintEventProductDeleted(object sender, EventArgs args)
-{
-    Console.WriteLine($"Usunięto wybrany produkt z listy. //{args}");
-}
-void PrintEventProductUpdated(object sender, EventArgs args)
-{
-    Console.WriteLine($"Zaktualizowano wybrany produkt z listy. //{args}");
-}
+

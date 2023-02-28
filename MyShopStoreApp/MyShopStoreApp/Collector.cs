@@ -22,12 +22,39 @@ namespace MyShopStoreApp
         public event ProductDeletedDelegate ProductDeleted;
         public event ProductUpdatedDelegate ProductUpdated;
 
+        public int TotalCount
+        {
+            get
+            {
+                return productWeighteds.Count + productPackeds.Count;
+            }
+        }
+        public float TotalCost 
+        { get
+            {
+                float cost = 0;
+                foreach(ProductWeighted item in productWeighteds)
+                {
+                    cost += item.TotalPrice;
+                }
+                foreach (ProductPacked item in productPackeds)
+                {
+                    cost += item.TotalPrice;
+                }
+                return cost;
+            }
+        }
+
         FileManager fileManagerW, fileManagerP;
         public Collector(string filenameW, string filenameP)
         {
             string filepath= "C:\\Users\\magda\\MyProjects\\MyShopStoreApp\\MyShopStoreApp\\MyShopStoreApp\\bin\\";
             string headerW = "Nazwa;Cena jedn.;Waga";
             string headerP = "Nazwa;Cena jedn.;Ile sztuk;Masa lub obj.;Jednostka [kg, l]";
+            ProductAdded += PrintEventProductAdded;
+            ProductDeleted += PrintEventProductDeleted;
+            ProductUpdated += PrintEventProductUpdated;
+
             fileManagerW = new FileManager(filepath + filenameW, headerW);
             fileManagerP = new FileManager(filepath + filenameP, headerP);
         }
@@ -185,7 +212,7 @@ namespace MyShopStoreApp
                         productPackeds[foundIndex[1]].UnitPrice = float.Parse(result[2]);
                         this.ProductUpdated(this, new EventArgs());
                     }    
-                    if (result[0] == "-aip")
+                    else if (result[0] == "-aip")
                     {
                         productPackeds[foundIndex[1]].Quantity = int.Parse(result[2]);
                         this.ProductUpdated(this, new EventArgs());
@@ -201,25 +228,33 @@ namespace MyShopStoreApp
         }
         public string ReturnFound(int[] foundIndex)
         {
-            ProductWeighted itemW = null;
-            ProductPacked itemP = null;
 
             if (foundIndex[0] == 1 && foundIndex[1] >= 0)
             {
-                itemW = productWeighteds[foundIndex[1]];
-                //return $"{itemW.Name}\t{itemW.UnitPrice}\t{itemW.Weight}\t";
+                ProductWeighted itemW = productWeighteds[foundIndex[1]];
                 return itemW.ToString();
             }
             else if (foundIndex[0] == 2 && foundIndex[1] >= 0)
             {
-                itemP = productPackeds[foundIndex[1]];
-                //return $"{itemP.Name}\t{itemP.UnitPrice}\t{itemP.Quantity}\t{itemP.MassOrCapacity}\t{itemP.Unit}\t";
+                ProductPacked itemP = productPackeds[foundIndex[1]];
                 return itemP.ToString();
             }
             else
             {
                 return "";
             }
+        }
+        void PrintEventProductAdded(object sender, EventArgs args)
+        {
+            Console.WriteLine($"Dodano nowy produkt do listy. //{args}");
+        }
+        void PrintEventProductDeleted(object sender, EventArgs args)
+        {
+            Console.WriteLine($"Usunięto wybrany produkt z listy. //{args}");
+        }
+        void PrintEventProductUpdated(object sender, EventArgs args)
+        {
+            Console.WriteLine($"Zaktualizowano wybrany produkt z listy. //{args}");
         }
     }
 }
