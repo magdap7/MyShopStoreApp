@@ -11,13 +11,11 @@ namespace MyShopStoreApp
         public  string Name { get; private set; }
         public  float UnitPrice { get;  set; }
 
-
         public Product(string name, float price)
         {
             this.Name = name;
             this.UnitPrice = price;
         }
-
         public virtual string WriteMe()
         {
             string objDescription = "";

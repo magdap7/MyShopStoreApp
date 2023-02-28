@@ -1,21 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
-//Console.WriteLine("Hello, World!");
-
-/*
-                                O PROGRAMIE
- 
-Program obsługuje magazyn do sklepu, gdzie produktami są  artykuły na wagę lub na sztuki. Wszystkie produkty posiadają nazwę, która jednoznacznie 
-okresla cechy produktu, czyli np masę opakowania czy pojemność kartonu. Poza tym mają cenę jednostkową (na sztukę lub na wagę).
-Co rozróżnia dwa typy produktów: te ważone mają dodatkowo atrybut w postaci wagi (kg), natomiast te na sztuki mają określoną: ilość sztuk
-i masę w kilogramach  na sztukę lub pojemność w litrach. Te, które nie mają miary wagi (np jajka, papierosy) ani objętości mają jednostkę x.
-Program umożliwia dodawanie do pliku nowych produktów, wyszukiwania po nazwie lub jej fragmencie. 
-Można aktualizować cenę jednostkową (na szt lub kg) wybranego po pełnej nazwie produktu. Można też usuwać wybrane pozycje z listy i z pliku.
- 
-*/
-
-
-using MyShopStoreApp;
-
+﻿using MyShopStoreApp;
 
 PrintInstructions();
 var collector = new Collector("ProductsWeighted.csv", "ProductsPacked.csv");
@@ -42,8 +25,8 @@ do
         bool cond2 = line.StartsWith("-dp ");
         bool cond3 = line.StartsWith("-z ");
         bool cond4 = line.StartsWith("-ac ");
-        bool cond5 = line.StartsWith("-aiw ");//wagowo
-        bool cond6 = line.StartsWith("-aip ");//paczki, pojemniki, kartony
+        bool cond5 = line.StartsWith("-aiw ");
+        bool cond6 = line.StartsWith("-aip ");
         bool cond7 = line.StartsWith("-u ");
 
         if (cond1 || cond2 || cond3 || cond4 || cond5 || cond6 || cond7)
@@ -54,7 +37,7 @@ do
                 switch (array[0])
                 {
                     case "-dw" or "-dp":
-                        collector.AddProductToList(line);//na wagę albo na paczki lub kartony
+                        collector.AddProductToList(line);
                         break;
                     case "-z":
                         int[] foundIndex = collector.FindProductInList(line, "nonstrict");
@@ -62,14 +45,13 @@ do
                         Console.WriteLine(found);
                         break;
                     case "-ac" or "-aiw" or "-aip":
-                        collector.UpdateProductInList(line);//cena jednostkowa albo ilość (sztuk lub wagowa)
+                        collector.UpdateProductInList(line);
                         break;
                     case "-u":
                         bool res = collector.DeleteProductFromList(line);
                         break;
                     default:
                         break;
-                        //throw new Exception("Inwalid command line."); 
                 }
             }
             else
@@ -98,11 +80,6 @@ catch (Exception ex)
 {
     Console.WriteLine($"Exeption catched: {ex.Message}");
 }
-
-
-
-//////////////////////Metody//////////////////////
-
 void PrintInstructions()
 {
     Console.WriteLine("PROGRAM DO OBSŁUGI MAGAZYNU DLA SKLEPU XYZ");
@@ -124,9 +101,6 @@ void PrintInstructions()
     Console.WriteLine("Jeśli produkt jest na sztuki, jako jednostkę podawaj jedną z: kg, l.");
     Console.WriteLine("Jeśli produkt jest na sztuki, ale nie ma podanej wagi czy pojemności, wstaw x.");
     Console.WriteLine("Aby wyjść z programu, naciśnij q lub zostaw pustą linię.");
-
-    //Console.WriteLine("syntax1: -n [unikatowa nazwa produktu] -c [cena jednostkowa w zł] -i [ilość sztuk] -m [ilość masowa] -p [jednostka kg lub l]");
-    //Console.WriteLine("syntax2: [unikatowa nazwa produktu];[cena jednostkowa w zł];[ilość sztuk];[masa lub objętość];[jednostka w kg lub l]");
 }
 
 

@@ -1,16 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-
-namespace MyShopStoreApp
+﻿namespace MyShopStoreApp
 {
     public class Collector : ICollector
     {
-        //string Filename1, Filename2;
         List<ProductWeighted> productWeighteds = new List<ProductWeighted>();
         List<ProductPacked> productPackeds = new List<ProductPacked>();
         InputValidator inputValidator = new InputValidator();
@@ -48,20 +39,17 @@ namespace MyShopStoreApp
         FileManager fileManagerW, fileManagerP;
         public Collector(string filenameW, string filenameP)
         {
-            string filepath= "C:\\Users\\magda\\MyProjects\\MyShopStoreApp\\MyShopStoreApp\\MyShopStoreApp\\bin\\";
             string headerW = "Nazwa;Cena jedn.;Waga";
             string headerP = "Nazwa;Cena jedn.;Ile sztuk;Masa lub obj.;Jednostka [kg, l]";
             ProductAdded += PrintEventProductAdded;
             ProductDeleted += PrintEventProductDeleted;
             ProductUpdated += PrintEventProductUpdated;
 
-            fileManagerW = new FileManager(filepath + filenameW, headerW);
-            fileManagerP = new FileManager(filepath + filenameP, headerP);
+            fileManagerW = new FileManager(filenameW, headerW);
+            fileManagerP = new FileManager(filenameP, headerP);
         }
-
         public void LoadProductsFromFileToTmpList()
         {
-            //throw new NotImplementedException();
             List<string> linesW = fileManagerW.ReadLineListFromFile();
             List<string> linesP = fileManagerP.ReadLineListFromFile();
 
@@ -92,10 +80,6 @@ namespace MyShopStoreApp
         }
         public void SaveProductsFromTmpListToFile()
         {
-            //throw new NotImplementedException();
-            //fileManagerW.ClearFile();
-            //fileManagerP.ClearFile();
-
             if(productWeighteds.Count> 0)
                 fileManagerW.ClearFile();
             if (productPackeds.Count > 0)
@@ -111,19 +95,17 @@ namespace MyShopStoreApp
                 fileManagerP.AddLineToFile(line);
             }
         }
-
         public void AddProductToList(string productParams)
         {
-            //throw new NotImplementedException();
             string[] result = inputValidator.IsValidForAddingProduct(productParams);
             if (result != null)
             {
-                if (result.Length == 4)//produkty na wagę
+                if (result.Length == 4)
                 {
                     productWeighteds.Add(new ProductWeighted(result[1], float.Parse(result[2]), float.Parse(result[3])));
                     this.ProductAdded(this, new EventArgs());
                 }
-                if (result.Length == 6)//produkty na sztuki
+                if (result.Length == 6)
                 {
                     productPackeds.Add(new ProductPacked(result[1], float.Parse(result[2]), int.Parse(result[3]), float.Parse(result[4]), result[5]));
                     this.ProductAdded(this, new EventArgs());
@@ -132,16 +114,15 @@ namespace MyShopStoreApp
         }
         public bool DeleteProductFromList(string productParams)
         {
-            //throw new NotImplementedException();
             int[] foundIndex = FindProductInList(productParams, "strict");
             if (foundIndex[0] == 1 && foundIndex[1] >= 0)
-            {//na wagę
+            {
                 productWeighteds.RemoveAt(foundIndex[1]);
                 this.ProductDeleted(this, new EventArgs());
                 return true;
             }
             if (foundIndex[0] == 2 && foundIndex[1] >= 0)
-            {//na sztuki
+            {
                 productPackeds.RemoveAt(foundIndex[1]);
                 this.ProductDeleted(this, new EventArgs());
                 return true;
@@ -150,14 +131,13 @@ namespace MyShopStoreApp
         }
         public int[] FindProductInList(string productParams, string type)
         {
-            //throw new NotImplementedException();
             var array = productParams.Split(' ');
-            string name = array[1]; //nazwa
+            string name = array[1]; 
 
             if (type == "strict")
             {
                 for (int index = 0; index < productWeighteds.Count; index++)
-                {//szukamy pierwszego pasujacego
+                {
                     if (productWeighteds[index].Name == name)
                         return new int[2] { 1, index };
                 }
@@ -168,10 +148,10 @@ namespace MyShopStoreApp
                 }
                 return new int[2] { -1, -1 };
             }
-            else //nonstrict
+            else
             {
                 for (int index = 0; index < productWeighteds.Count; index++)
-                {//szukamy pierwszego pasujacego
+                {
                     if (productWeighteds[index].Name.Contains(name))
                         return new int[2] { 1, index };
                 }
@@ -185,20 +165,19 @@ namespace MyShopStoreApp
         }
         public bool UpdateProductInList(string productParams)
         {
-            //throw new NotImplementedException();
             string[] result = inputValidator.IsValidForUpdatingProduct(productParams);
 
             if (result != null)
             {
                 int[] foundIndex = FindProductInList(productParams, "strict");
                 if (foundIndex[0] == 1 && foundIndex[1] >= 0)
-                {//na wagę
+                {
                     if (result[0] == "-ac")
                     {
                         productWeighteds[foundIndex[1]].UnitPrice = float.Parse(result[2]);
                         this.ProductUpdated(this, new EventArgs());
                     }   
-                    else //if (result[0] == "-aiw")
+                    else
                     {
                         productWeighteds[foundIndex[1]].Weight = float.Parse(result[2]);
                         this.ProductUpdated(this, new EventArgs());
@@ -206,7 +185,7 @@ namespace MyShopStoreApp
                     return true;
                 }
                 if (foundIndex[0] == 2 && foundIndex[1] >= 0)
-                {//na sztuki
+                {
                     if (result[0] == "-ac")
                     {
                         productPackeds[foundIndex[1]].UnitPrice = float.Parse(result[2]);

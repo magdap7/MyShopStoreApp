@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static MyShopStoreApp.Product;
-
-namespace MyShopStoreApp
+﻿namespace MyShopStoreApp
 {
     public interface ICollector
     {
@@ -17,7 +10,5 @@ namespace MyShopStoreApp
         int[] FindProductInList(string productParams, string type);
         bool UpdateProductInList(string productParams);
         bool DeleteProductFromList(string productParams);
-
-        //event ProductAddedDelegate ProducAdded;
     }
 }

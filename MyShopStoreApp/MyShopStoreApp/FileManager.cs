@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.PortableExecutable;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MyShopStoreApp
+﻿namespace MyShopStoreApp
 {
     public class FileManager
     {
@@ -17,12 +10,10 @@ namespace MyShopStoreApp
             this.FileName = filename;
             this.Header = header;
         }
-   
-
         public void AddLineToFile(List<string> list)
         {
             if (!File.Exists(FileName))
-            {//dodaj wiersz nazw kolumn
+            {
                 using (var writer = File.AppendText(FileName))
                 {
                     writer.WriteLine(Header);
@@ -37,7 +28,7 @@ namespace MyShopStoreApp
         public void AddLineToFile(string combinedString)
         {
             if (!File.Exists(FileName))
-            {//dodaj wiersz nazw kolumn
+            {
                 using (var writer = File.AppendText(FileName))
                 {
                     writer.WriteLine(Header);
@@ -52,14 +43,14 @@ namespace MyShopStoreApp
         {
             List<string> list = new List<string>();
             if (!File.Exists(FileName))
-            {//rzuć wyjątkiem
+            {
                 throw new Exception($"File {FileName} doesn't exist.");
             }
             else
             {
                 using (var reader = File.OpenText(FileName))
                 {
-                    reader.ReadLine();//wiersz kolumn
+                    reader.ReadLine();
                     var line = reader.ReadLine();
                     while (line != null)
                     {
@@ -74,7 +65,6 @@ namespace MyShopStoreApp
         {
             if (File.Exists(FileName))
             {
-                //File.Delete(FileName);
                 using (StreamWriter writer = new StreamWriter(FileName))
                 {
                     writer.WriteLine(Header);
